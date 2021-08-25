@@ -17,16 +17,16 @@ steps:
     command: 'get'
     arguments: '-d'
     workingDirectory: '$(System.DefaultWorkingDirectory)'
-- task: Go@0
-  inputs:
-    command: 'build'
-    workingDirectory: '$(System.DefaultWorkingDirectory)'
 # test the hello world module
 - task: Go@0
   inputs:
     command: 'test'
     arguments: '-v'
-    workingDirectory: '$(modulePath)/hello'
+    workingDirectory: 'WalletDA/hello/'
+- task: Go@0
+  inputs:
+    command: 'build'
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
 - task: CopyFiles@2
   inputs:
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
