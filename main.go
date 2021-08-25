@@ -1,7 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"example.com/WalletDA/hello"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	outputString := hello.Hello()
+	fmt.Println(outputString)
 }

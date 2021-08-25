@@ -99,11 +99,11 @@ This module should keep a local cache of recent queries, so that it does not rep
 
 # Implementation step-by-step
 
-## 1 - DONE Put a simple "hello world" app on a CI pipleine
+## 1 - DONE Put a simple "hello world" app on a CI pipeline
 I used azure DevOps (private repository) to create the pipelines, and then extracted the yaml files for CI
 For this excercise, I only created the development pipeline, tracking the branch "dev". SInce I am alone on this project, no branch policies were used
 
-## 2 - TODO Include a test case and add it into de CI piepeline
+## 2 - TODO Include a test case and add it into de CI pipeline
 At the end of this stage, this app will be alwyas on a deliverable state
 
 ## 3 - TODO Implement the "/balance" endpoint
