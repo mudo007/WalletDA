@@ -22,7 +22,7 @@ steps:
   inputs:
     command: 'test'
     arguments: '-v'
-    workingDirectory: 'WalletDA/hello/'
+    workingDirectory: '$(modulePath)'
 - task: Go@0
   inputs:
     command: 'build'
