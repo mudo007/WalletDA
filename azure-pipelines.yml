@@ -22,7 +22,7 @@ steps:
   inputs:
     command: 'test'
     arguments: '-v'
-    workingDirectory: '$(modulePath)'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/hello/'
 - task: Go@0
   inputs:
     command: 'build'
