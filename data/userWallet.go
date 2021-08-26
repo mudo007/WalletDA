@@ -2,76 +2,131 @@ package data
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 )
 
 // User account structure for Wallet API
-type UserWallet struct {
-	ID            string         `json:"id"`
-	Username      string         `json:"userName"`
-	CryptoBalance []CryptoAmount `json:"cryptoBalance"`
+type CryptoBalance struct {
+	Currency       string  `json:"currency"`
+	Amount         float64 `json:"amount"`
+	PriceInDollars float64 `json:"priceInDollars"`
+	PriceInEuros   float64 `json:"priceInEuros"`
+	RateTimeStamp  string  `json:"timeOfRateUsed"`
+	TotalEuros     float64 `json:"totalEuros"`
+	TotalDollars   float64 `json:"totalDollars"`
 }
 
-type CryptoAmount struct {
-	Cryptocurrency string  `json:"cryptoCurrency"`
-	Amount         float64 `json:"amount"`
+type UserBalance struct {
+	UserName          string          `json:"userName"`
+	TotalEuros        float64         `json:"totalEuros"`
+	TotalDollars      float64         `json:"totalDollars"`
+	CryptoBalanceList []CryptoBalance `json:"CryptoBalanceList"`
 }
 
 //attach a json encoder directly to the interface
-type UserWallets []*UserWallet
-
-func (userWallets *UserWallets) ToJson(writer io.Writer) error {
+func (userBalance *UserBalance) ToJson(writer io.Writer) error {
 	newError := json.NewEncoder(writer)
-	return newError.Encode(userWallets)
+	return newError.Encode(userBalance)
 }
 
-//abstraction to return UserWallets
-func GetUserWallet() UserWallets {
-	return WalletEntries
+//abstraction to return user Balances
+func GetUserBalance(userName string) (UserBalance, error) {
+	//search for user in mock array
+	userBalance, err := FindUSer(&BalanceMockData, userName)
+	//carry the error forward
+	if err != nil {
+		return userBalance, err
+	}
+	//calculate user balance and return
+	return userBalance.CalculateUserBalance(), nil
+
 }
 
-//mock data for local testing
-var WalletEntries = []*UserWallet{
+//search the user
+func FindUSer(userBalanceList *[]UserBalance, userName string) (UserBalance, error) {
+	for _, userBalance := range *userBalanceList {
+		if userBalance.UserName == userName {
+			return userBalance, nil
+		}
+	}
+	var emptyUserBalance UserBalance
+	return emptyUserBalance, userNotFound(userName)
+}
+
+type userNotFound string
+
+//custom error function for userBalance
+func (e userNotFound) Error() string {
+	return fmt.Sprintf("User not found: %s", string(e))
+}
+
+//calculate totals
+func (userBalance *UserBalance) CalculateUserBalance() UserBalance {
+	//accumulators
+	var totalEuros, totalDollars float64
+	var calculatedUserBalance UserBalance = *userBalance
+	for i := range calculatedUserBalance.CryptoBalanceList {
+		calculatedUserBalance.CryptoBalanceList[i].TotalEuros = calculatedUserBalance.CryptoBalanceList[i].Amount * calculatedUserBalance.CryptoBalanceList[i].PriceInEuros
+		totalEuros += calculatedUserBalance.CryptoBalanceList[i].TotalEuros
+		calculatedUserBalance.CryptoBalanceList[i].TotalDollars = calculatedUserBalance.CryptoBalanceList[i].Amount * calculatedUserBalance.CryptoBalanceList[i].PriceInDollars
+		totalDollars += calculatedUserBalance.CryptoBalanceList[i].TotalDollars
+	}
+	calculatedUserBalance.TotalDollars = totalDollars
+	calculatedUserBalance.TotalEuros = totalEuros
+	return calculatedUserBalance
+}
+
+//------------------Mock Data --------------------------
+
+var BalanceMockData = []UserBalance{
 	{
-		ID:       "1fc96ed7-b55a-48d7-855d-4868ba326353",
-		Username: "Holland",
-		CryptoBalance: []CryptoAmount{
+		UserName:     "Holland",
+		TotalEuros:   0.0,
+		TotalDollars: 0.0,
+		CryptoBalanceList: []CryptoBalance{
 			{
-				Cryptocurrency: "btc",
-				Amount:         12.34,
+				Currency:       "btc",
+				Amount:         12.5,
+				PriceInDollars: 25000,
+				PriceInEuros:   18000,
+				RateTimeStamp:  "08/09/24 23:34",
+				TotalEuros:     0.0,
+				TotalDollars:   0.0,
 			},
 			{
-				Cryptocurrency: "xrp",
-				Amount:         345.49,
-			},
-			{
-				Cryptocurrency: "doge",
-				Amount:         0.000008976,
+				Currency:       "xrp",
+				Amount:         345.987,
+				PriceInDollars: 750,
+				PriceInEuros:   650,
+				RateTimeStamp:  "08/09/24 23:34",
+				TotalEuros:     0.0,
+				TotalDollars:   0.0,
 			},
 		},
 	},
 	{
-		ID:       "5dd5fabe-d82d-4e40-a233-3e214189bfd3",
-		Username: "Garfield",
-		CryptoBalance: []CryptoAmount{
+		UserName:     "Garfield",
+		TotalEuros:   0.0,
+		TotalDollars: 0.0,
+		CryptoBalanceList: []CryptoBalance{
 			{
-				Cryptocurrency: "eth",
-				Amount:         812.34,
+				Currency:       "eth",
+				Amount:         12.5,
+				PriceInDollars: 650,
+				PriceInEuros:   530,
+				RateTimeStamp:  "08/09/24 23:34",
+				TotalEuros:     0.0,
+				TotalDollars:   0.0,
 			},
-
 			{
-				Cryptocurrency: "doge",
-				Amount:         89768.09,
-			},
-		},
-	},
-	{
-		ID:       "fe547020-6941-40a5-9c68-0655a0793c54",
-		Username: "McGuire",
-		CryptoBalance: []CryptoAmount{
-			{
-				Cryptocurrency: "btc",
-				Amount:         0.013,
+				Currency:       "doge",
+				Amount:         345.987,
+				PriceInDollars: 750,
+				PriceInEuros:   650,
+				RateTimeStamp:  "08/09/24 23:34",
+				TotalEuros:     0.0,
+				TotalDollars:   0.0,
 			},
 		},
 	},

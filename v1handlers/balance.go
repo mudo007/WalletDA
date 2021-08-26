@@ -16,10 +16,10 @@ func BalanceWithLogger(logger *log.Logger) *Balance {
 	return &Balance{logger}
 }
 
-func (wallets *Balance) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
+func (userBalance *Balance) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
 	//http verbs handling
 	if request.Method == http.MethodGet {
-		wallets.getWallet(responseWriter, request)
+		userBalance.getBalance("Holland", responseWriter, request)
 		return
 	}
 
@@ -27,12 +27,17 @@ func (wallets *Balance) ServeHTTP(responseWriter http.ResponseWriter, request *h
 	responseWriter.WriteHeader((http.StatusMethodNotAllowed))
 }
 
-func (wallets *Balance) getWallet(responseWriter http.ResponseWriter, request *http.Request) {
+func (wallets *Balance) getBalance(userName string, responseWriter http.ResponseWriter, request *http.Request) {
 	wallets.logger.Println("Running balance handler")
 
 	//read userWallets
-	wallet := data.GetUserWallet()
-	err := wallet.ToJson(responseWriter)
+	userBalance, errUser := data.GetUserBalance(userName)
+	if errUser != nil {
+		//return server error 404
+		http.Error(responseWriter, "User Not Found", http.StatusNotFound)
+		return
+	}
+	err := userBalance.ToJson(responseWriter)
 	if err != nil {
 		log.Println("Error encoding json", err)
 
