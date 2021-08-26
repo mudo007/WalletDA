@@ -1,10 +1,10 @@
 package v1handlers
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
+
+	"example.com/walletDA/data"
 )
 
 type Balance struct {
@@ -12,22 +12,32 @@ type Balance struct {
 }
 
 //placeholder to log to database
-func BalanceLogSQL(logger *log.Logger) *Balance {
+func BalanceWithLogger(logger *log.Logger) *Balance {
 	return &Balance{logger}
 }
 
-func (handler *Balance) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
-	handler.logger.Println("Running balance handler")
-
-	// read the body
-	body, err := ioutil.ReadAll(request.Body)
-	if err != nil {
-		log.Println("Error reading body", err)
-
-		http.Error(responseWriter, "Unable to read request body", http.StatusBadRequest)
+func (wallets *Balance) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
+	//http verbs handling
+	if request.Method == http.MethodGet {
+		wallets.getWallet(responseWriter, request)
 		return
 	}
 
-	// write the mock response
-	fmt.Fprintf(responseWriter, "Hello %s", body)
+	//catch all
+	responseWriter.WriteHeader((http.StatusMethodNotAllowed))
+}
+
+func (wallets *Balance) getWallet(responseWriter http.ResponseWriter, request *http.Request) {
+	wallets.logger.Println("Running balance handler")
+
+	//read userWallets
+	wallet := data.GetUserWallet()
+	err := wallet.ToJson(responseWriter)
+	if err != nil {
+		log.Println("Error encoding json", err)
+
+		//return server error 500
+		http.Error(responseWriter, "Error encoding json", http.StatusInternalServerError)
+		return
+	}
 }

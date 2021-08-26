@@ -14,7 +14,7 @@ import (
 func main() {
 	//initiate handlers and loggers
 	logger := log.New(os.Stdout, "v1_api ", log.LstdFlags)
-	balanceHandler := v1handlers.BalanceLogSQL((logger))
+	balanceHandler := v1handlers.BalanceWithLogger((logger))
 
 	//Create new Servermux
 	serverMux := http.NewServeMux()
