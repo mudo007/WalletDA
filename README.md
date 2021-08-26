@@ -107,7 +107,7 @@ For this excercise, I only created the development pipeline, tracking the branch
 At the end of this stage, this app will be alwyas on a deliverable state
 
 ## 3 - TODO Implement the "/balance" endpoint
-This very first endpoint will require the database creation, the web API project structure, and a more sophisticated test. The database would be populated with 3 account hoders, each with some random balance data on it.
+This very first endpoint will require the database creation, the web API project structure, and a more sophisticated test. The database would be populated with 3 account hoders, each with some random balance data on it. Add Swagger to it!
 
 ## 4 - TODO create the CD pipeline, creating a docker image, pushing to a private container registry, and then publishing to a container app service on azure.
 At the end of this stage, te app will be always "live" after new changes are pushed into "dev".
@@ -129,3 +129,4 @@ There was a lot of exemple projects used on this codebase, so credit should be g
  - https://www.youtube.com/watch?v=07XhTqE-j8k
  - https://medium.com/@pedram.esmaeeli/generate-swagger-specification-from-go-source-code-648615f7b9d9
   - https://github.com/microsoft/sql-server-samples/blob/master/samples/tutorials/go/crud.go
+  - https://github.com/nicholasjackson/building-microservices-youtube/tree/episode_7
