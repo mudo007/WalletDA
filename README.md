@@ -129,4 +129,5 @@ There was a lot of exemple projects used on this codebase, so credit should be g
  - https://www.youtube.com/watch?v=07XhTqE-j8k
  - https://medium.com/@pedram.esmaeeli/generate-swagger-specification-from-go-source-code-648615f7b9d9
   - https://github.com/microsoft/sql-server-samples/blob/master/samples/tutorials/go/crud.go
-  - https://github.com/nicholasjackson/building-microservices-youtube/tree/episode_7
+  - https://github.com/nicholasjackson/building-microservices-youtube/
+  - https://stackoverflow.com/questions/51456253/how-to-set-http-responsewriter-content-type-header-globally-for-all-api-endpoint
