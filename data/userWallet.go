@@ -31,9 +31,9 @@ func (userBalance *UserBalance) ToJson(writer io.Writer) error {
 }
 
 //abstraction to return user Balances
-func GetUserBalance(userName string) (UserBalance, error) {
+func GetUserBalance(userName string, userBalanceList []UserBalance) (UserBalance, error) {
 	//search for user in mock array
-	userBalance, err := FindUSer(&BalanceMockData, userName)
+	userBalance, err := FindUSer(&userBalanceList, userName)
 	//carry the error forward
 	if err != nil {
 		return userBalance, err
@@ -65,13 +65,16 @@ func (e userNotFound) Error() string {
 func (userBalance *UserBalance) CalculateUserBalance() UserBalance {
 	//accumulators
 	var totalEuros, totalDollars float64
-	var calculatedUserBalance UserBalance = *userBalance
-	for i := range calculatedUserBalance.CryptoBalanceList {
-		calculatedUserBalance.CryptoBalanceList[i].TotalEuros = calculatedUserBalance.CryptoBalanceList[i].Amount * calculatedUserBalance.CryptoBalanceList[i].PriceInEuros
-		totalEuros += calculatedUserBalance.CryptoBalanceList[i].TotalEuros
-		calculatedUserBalance.CryptoBalanceList[i].TotalDollars = calculatedUserBalance.CryptoBalanceList[i].Amount * calculatedUserBalance.CryptoBalanceList[i].PriceInDollars
-		totalDollars += calculatedUserBalance.CryptoBalanceList[i].TotalDollars
+	var calculatedUserBalance UserBalance
+	var calculatedUserBalanceList []CryptoBalance = userBalance.CryptoBalanceList
+	for i := range calculatedUserBalanceList {
+		calculatedUserBalanceList[i].TotalEuros = calculatedUserBalanceList[i].Amount * calculatedUserBalanceList[i].PriceInEuros
+		totalEuros += calculatedUserBalanceList[i].TotalEuros
+		calculatedUserBalanceList[i].TotalDollars = calculatedUserBalanceList[i].Amount * calculatedUserBalanceList[i].PriceInDollars
+		totalDollars += calculatedUserBalanceList[i].TotalDollars
 	}
+	calculatedUserBalance.UserName = userBalance.UserName
+	calculatedUserBalance.CryptoBalanceList = calculatedUserBalanceList
 	calculatedUserBalance.TotalDollars = totalDollars
 	calculatedUserBalance.TotalEuros = totalEuros
 	return calculatedUserBalance

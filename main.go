@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"example.com/walletDA/v1handlers"
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -16,9 +17,17 @@ func main() {
 	logger := log.New(os.Stdout, "v1_api ", log.LstdFlags)
 	balanceHandler := v1handlers.BalanceWithLogger((logger))
 
-	//Create new Servermux
-	serverMux := http.NewServeMux()
-	serverMux.Handle("/balance", balanceHandler)
+	//Create new Servermux with gorilla
+	serverMux := mux.NewRouter()
+	//configure the response content-type globally
+	serverMux.Use(commonMiddleware)
+
+	//define get router
+	getRouter := serverMux.Methods(http.MethodGet).Subrouter()
+	getRouter.HandleFunc("/api/v1/balance/{userName}", balanceHandler.GetBalance)
+	//TODO: GET endpoint for history
+
+	//TODO: PUT endpoints for withdraw/deposit
 
 	//create custom server to use options
 	//good keep-alive timeout for those trading bots IdleTimeout
@@ -57,4 +66,12 @@ func main() {
 	}
 	walletServer.Shutdown(shutDownContext)
 
+}
+
+//awlays add response type  application/json
+func commonMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		next.ServeHTTP(w, r)
+	})
 }
