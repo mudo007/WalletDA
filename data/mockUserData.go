@@ -1,5 +1,7 @@
 package data
 
+import "time"
+
 var BalanceMockData = []UserBalance{
 	{
 		UserName:     "Holland",
@@ -11,7 +13,7 @@ var BalanceMockData = []UserBalance{
 				Amount:         12.5,
 				PriceInDollars: 25000,
 				PriceInEuros:   18000,
-				RateTimeStamp:  "08/09/24 23:34",
+				RateTimeStamp:  time.Now(),
 				TotalEuros:     0.0,
 				TotalDollars:   0.0,
 			},
@@ -20,7 +22,7 @@ var BalanceMockData = []UserBalance{
 				Amount:         345.987,
 				PriceInDollars: 750,
 				PriceInEuros:   650,
-				RateTimeStamp:  "08/09/24 23:34",
+				RateTimeStamp:  time.Now(),
 				TotalEuros:     0.0,
 				TotalDollars:   0.0,
 			},
@@ -36,7 +38,7 @@ var BalanceMockData = []UserBalance{
 				Amount:         12.5,
 				PriceInDollars: 650,
 				PriceInEuros:   530,
-				RateTimeStamp:  "08/09/24 23:34",
+				RateTimeStamp:  time.Now(),
 				TotalEuros:     0.0,
 				TotalDollars:   0.0,
 			},
@@ -45,7 +47,7 @@ var BalanceMockData = []UserBalance{
 				Amount:         345.987,
 				PriceInDollars: 750,
 				PriceInEuros:   650,
-				RateTimeStamp:  "08/09/24 23:34",
+				RateTimeStamp:  time.Now(),
 				TotalEuros:     0.0,
 				TotalDollars:   0.0,
 			},

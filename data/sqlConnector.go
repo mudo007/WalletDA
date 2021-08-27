@@ -105,3 +105,46 @@ func GetHistorySQL(user string, startDate, endDate time.Time) (Transactions, err
 	}
 	return HistoryResult, nil
 }
+
+func GetUserBalanceSQL(userName string) (UserBalance, error) {
+
+	//Get USerBalance from database
+	//try to connect
+	db, err := SqlConnect()
+	var userBalance UserBalance
+	userBalance.UserName = userName
+	if err != nil {
+		//move the error forward
+		return userBalance, err
+	}
+	defer db.Close()
+	//run the query
+	//empty context
+	ctx := context.TODO()
+	rows, errQuery := db.QueryContext(ctx, `SELECT Currency,Amount FROM TblBalance join TblUsers on TblUsers.UserId = TblBalance.UserId where UserName = @p1;`, userName)
+	if errQuery != nil {
+		fmt.Println("Error reading rows: " + err.Error())
+		return userBalance, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var element CryptoBalance
+		errScan := rows.Scan(&element.Currency, &element.Amount)
+		if errScan != nil {
+			fmt.Println("Error reading rows: " + errScan.Error())
+			return userBalance, errScan
+		}
+		//append to historyresult
+		userBalance.CryptoBalanceList = append(userBalance.CryptoBalanceList, element)
+	}
+
+	//calculate user balance and return
+	result, errCalc := userBalance.CalculateUserBalance()
+	if errCalc != nil {
+		fmt.Println("Error reading rows: " + errCalc.Error())
+		return userBalance, errCalc
+	}
+	return result, nil
+
+}

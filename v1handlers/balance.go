@@ -24,7 +24,7 @@ func (wallets *Balance) GetBalance(responseWriter http.ResponseWriter, request *
 	userName := vars["userName"]
 
 	//read userWallets
-	userBalance, errUser := data.GetUserBalance(userName, data.BalanceMockData)
+	userBalance, errUser := data.GetUserBalanceSQL(userName)
 	if errUser != nil {
 		//return server error 404
 		http.Error(responseWriter, "User Not Found", http.StatusNotFound)

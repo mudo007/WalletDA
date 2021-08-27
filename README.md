@@ -16,14 +16,16 @@ The API will use the common "/api/v`<number`>/`<endpoint>`" versioning scheme.
 So, the "withdraw" endpoint will be `"/api/v1/withdraw"`
 
 ## Running the app locally
-- Must have GoLang Installed, version 1.3+
+- Must have GoLang Installed, version 1.17+
 - Must have a SQL server instance avaliabe, with it's connection string already known
 - Open the folder where the "main.go" file is located on a terminal
-- TODO: If this is the first time run the script "createDAtabase.SQL" on SQL Management Studio tool
-- TODO: If this is the first time running the project, and you want an already populated Database with test data, run the script "FillSQLDataBase.sql" on SQL management Studio
+- If this is the first time run the scripts "dbScripts\WalletDA_create_tabels.sql" and "dbScripts\WalletDA_create_sp_transactions.sql" on SQL Management Studio tool
+- If this is the first time running the project, and you want an already populated Database with test data, run the script "dbScripts\WalletDA_create_balances.sql" on SQL management Studio
+- inside the file "data\sqlConnector.go", change the connection parameters
+>WARNING: I wasted about 2 hours trying to connect to a local SQL server database, getting "connection refused errors". After thoroghfully checking the windows firewall and antivirus firewall, I found out that the problem was with WSL terminal. after I switched to powershell, I managed to get a database connection. 
 - $go run .
-- The webserver should be up and running on localhost, port 8082
-- Test using the application Swagger page, or another tool of choice (postman, insominia, etc.)
+- The webserver should be up and running on localhost, port 9090
+- Test using postman, importing the project template file "postmanProject\WalletDA.postman_collection.json"
 - TODO: set up the external 3rd party crypto Rates mock app  
 
 ## Deploying the app 
@@ -106,15 +108,16 @@ For this excercise, I only created the development pipeline, tracking the branch
 ## 2 - DONE Include a test case and add it into de CI pipeline
 At the end of this stage, this app will be alwyas on a deliverable state
 
-## 3 - TODO Implement the "/balance" endpoint
+## 3 - ALMOST Implement the "/balance" endpoint
 This very first endpoint will require the database creation, the web API project structure, and a more sophisticated test. The database would be populated with 3 account hoders, each with some random balance data on it. Add Swagger to it!
+>No tests or swagger, due to the deadline. But I managed to export a postman project, inside the folder "postmanProject, to test it all. 
 
-## 4 - TODO create the CD pipeline, creating a docker image, pushing to a private container registry, and then publishing to a container app service on azure.
-At the end of this stage, te app will be always "live" after new changes are pushed into "dev".
-
-## 5 - TODO Write tests/implement the other 3 endpoints
+## 4 - ALMOST Write tests/implement the other 3 endpoints
 The "/withdraw" and "/deposit" requests will be queued on a channel, and will be de-queued by the concouurency handler. The buffer size could be a configuration parameter, so that throughput tests could evaluate the "buffer size X Throughput" tradeoff
 For this activity, I will mock the external Rates endpoint
+>Couldn't implement any concurrency management. Transactions are going straight into the database. However, I did implement an "extra" feature. If a withdraw would make the balance go necative, I return an "insufficient funds" message, and the transaction does not happen. I implemented the consistency of transaction/balance, using a stored procedure on SQL server.
+## 5 - TODO create the CD pipeline, creating a docker image, pushing to a private container registry, and then publishing to a container app service on azure.
+At the end of this stage, te app will be always "live" after new changes are pushed into "dev".
 
 ## 6 - TODO Implement the rates query to a 3rd party API
 At first without the caching feature, nad then add caching
