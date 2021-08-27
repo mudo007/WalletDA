@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"time"
 
-	"example.com/walletDA/data"
 	"example.com/walletDA/v1handlers"
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/gorilla/mux"
@@ -18,6 +17,7 @@ func main() {
 	//initiate handlers and loggers
 	logger := log.New(os.Stdout, "v1_api ", log.LstdFlags)
 	balanceHandler := v1handlers.BalanceWithLogger((logger))
+	transactionHandler := v1handlers.TransactionWithLogger((logger))
 
 	//Create new Servermux with gorilla
 	serverMux := mux.NewRouter()
@@ -27,9 +27,14 @@ func main() {
 	//define get router
 	getRouter := serverMux.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/api/v1/balance/{userName}", balanceHandler.GetBalance)
+	getRouter.HandleFunc("/api/v1/history", balanceHandler.GetHistory)
+
 	//TODO: GET endpoint for history
 
 	//TODO: PUT endpoints for withdraw/deposit
+	putRouter := serverMux.Methods(http.MethodPut).Subrouter()
+	putRouter.HandleFunc("/api/v1/withdraw", transactionHandler.WithdrawFunds)
+	putRouter.HandleFunc("/api/v1/deposit", transactionHandler.DepositFunds)
 
 	//create custom server to use options
 	//good keep-alive timeout for those trading bots IdleTimeout
@@ -51,15 +56,6 @@ func main() {
 			os.Exit(1)
 		}
 	}()
-
-	var sqlParams = data.SqlParams{
-		Server: "DFDEVNBMD33",
-		Port:   1433,
-		User:   "go_sql",
-		Passwd: "go_sql123",
-	}
-
-	data.SqlTest(sqlParams)
 
 	// trap sigterm or interupt and gracefully shutdown the server
 	osChannel := make(chan os.Signal, 1)

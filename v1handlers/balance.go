@@ -39,3 +39,33 @@ func (wallets *Balance) GetBalance(responseWriter http.ResponseWriter, request *
 		return
 	}
 }
+
+func (transactionHistory *Balance) GetHistory(responseWriter http.ResponseWriter, request *http.Request) {
+	transactionHistory.logger.Println("Running balance handler")
+	//extract userName from body
+	//read json from body
+	t := data.HistoryBodyQuery{}
+
+	errBody := t.FromJSON(request.Body)
+	if errBody != nil {
+		transactionHistory.logger.Println("[ERROR] deserializing product", errBody)
+		http.Error(responseWriter, "Error reading History", http.StatusBadRequest)
+		return
+	}
+
+	//read userWallets
+	userHistory, errUser := data.GetHistorySQL(t.UserName, t.StartTime, t.EndTime)
+	if errUser != nil {
+		//return server error 404
+		http.Error(responseWriter, "Transaction History not found", http.StatusNotFound)
+		return
+	}
+	err := userHistory.ToJson(responseWriter)
+	if err != nil {
+		transactionHistory.logger.Println("Error encoding json", err)
+
+		//return server error 500
+		http.Error(responseWriter, "Error encoding json", http.StatusInternalServerError)
+		return
+	}
+}
