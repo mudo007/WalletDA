@@ -8,7 +8,9 @@ import (
 	"os/signal"
 	"time"
 
+	"example.com/walletDA/data"
 	"example.com/walletDA/v1handlers"
+	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/gorilla/mux"
 )
 
@@ -20,7 +22,7 @@ func main() {
 	//Create new Servermux with gorilla
 	serverMux := mux.NewRouter()
 	//configure the response content-type globally
-	serverMux.Use(commonMiddleware)
+	serverMux.Use(addContentJsonMiddleware)
 
 	//define get router
 	getRouter := serverMux.Methods(http.MethodGet).Subrouter()
@@ -50,6 +52,15 @@ func main() {
 		}
 	}()
 
+	var sqlParams = data.SqlParams{
+		Server: "DFDEVNBMD33",
+		Port:   1433,
+		User:   "go_sql",
+		Passwd: "go_sql123",
+	}
+
+	data.SqlTest(sqlParams)
+
 	// trap sigterm or interupt and gracefully shutdown the server
 	osChannel := make(chan os.Signal, 1)
 	signal.Notify(osChannel, os.Interrupt)
@@ -69,7 +80,7 @@ func main() {
 }
 
 //awlays add response type  application/json
-func commonMiddleware(next http.Handler) http.Handler {
+func addContentJsonMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		next.ServeHTTP(w, r)
