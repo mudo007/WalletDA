@@ -1,8 +1,7 @@
 # WalletDA - Golang Project for developer skills evaluation
 ## About  
 This project is a code challenge, described on the "specifications.pdf" file at the root of this repository. DA stands for "Diogo Andrade", my name.  
-I start by describing how de guidelines on how it would work on a hypotetical production scenario. Many of thenm wouldn't be actually implemented on this excercise.  
-Then I proceed on a step-by-step description on teh actual implementation, and then Finally, I present the sources I "drew inspiration from".
+I start by describing the guidelines on how it would work on a hypotetical production scenario, and created a full backlog with architecture diagrams. Then I tried to implement as much as possible on the given schedule.  
 
 ### Author's Background
 Since I had no familiarity with GoLang prior to this project, most descriptions on this topic will begin at an abstract level, and I'll be modifying the sections to GoLang "jargon" as I improve my familiarity with it.  
@@ -33,7 +32,7 @@ So, the "withdraw" endpoint will be `"/api/v1/withdraw"`
 - There should be 3 environment of CI/CD: one for development, one for staging and the last one for production, each one targeting one Source Control branch
 - All three tracked branches would be protected by a pull-request policy:
   - It must build successfully
-  - It must be approved by 2 other team members
+  - It must be approved by 1 other team member
 - Each environment should have its own database
 - Database Secrets on Staging and Production environments should be hidden from the developers, and transformed on the CD pipeline.
 - The CI pipeline should run automated unit tests
@@ -44,7 +43,7 @@ So, the "withdraw" endpoint will be `"/api/v1/withdraw"`
 ## Authorization Authentication, and application secrets
 For simplicity, I did not include any authorization/authentication scheme for the Microservice endpoints, and I am assuming that the 3rd Party Exchange Rates API doesn't require any authentication scheme as well.  
 But on a production environment, a strong authentication/authorization scheme should be used.
-> I would use JWT authentication, since it promotes performance by including authorization claims in its content. The JWT token generation could be based on x.509 certificates issued by trusted Known authorities.  
+> I would use JWT authentication, since it promotes performance by including authorization claims in its content.
 
 ## Testing
 The Methods and Functions shall be tested with unit tests, where the behavior from the Consumer's perspective should be tested with automated behavior tests using Postman test suites or a similar technology.
